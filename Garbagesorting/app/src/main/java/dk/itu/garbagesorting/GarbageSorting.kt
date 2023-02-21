@@ -1,50 +1,36 @@
-package dk.itu.garbagesorting;
+package dk.itu.garbagesorting
 
-import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent
+import android.os.Bundle
+import android.widget.Button
+import android.widget.TextView
+import androidx.appcompat.app.AppCompatActivity
+import dk.itu.garbagesorting.AddItem
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.View;
-import android.widget.Button;
-import android.widget.TextView;
-import android.widget.Toast;
-import java.util.Iterator;
-
-public class GarbageSorting extends AppCompatActivity {
-
-    //Model: Database of items
-    private static ItemsDB itemsDB;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.garbage_sorting);
-
-        ItemsDB.initialize();
-        itemsDB = ItemsDB.get();
+class GarbageSorting : AppCompatActivity() {
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.garbage_sorting)
+        ItemsDB.initialize()
+        itemsDB = ItemsDB.get()
 
         //Text Fields
-        TextView input = findViewById(R.id.what_text);
+        val input = findViewById<TextView>(R.id.what_text)
+        val findPlace = findViewById<Button>(R.id.where_button)
+        findPlace.setOnClickListener {
+            val whatS = input.text.toString().trim { it <= ' ' }
+            val place = itemsDB?.searchForItem(whatS)
+            input.text = "$whatS should be placed in: $place"
+        }
+        val listItems = findViewById<Button>(R.id.add_item_button)
+        listItems.setOnClickListener {
+            val intent = Intent(this@GarbageSorting, AddItem::class.java)
+            startActivity(intent)
+        }
+    }
 
-
-        Button findPlace = findViewById(R.id.where_button);
-        findPlace.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String whatS = input.getText().toString().trim();
-                String place = itemsDB.searchForItem(whatS);
-
-                input.setText(whatS + " should be placed in: " + place);
-            }
-        });
-
-        Button listItems = findViewById(R.id.add_item_button);
-        listItems.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(GarbageSorting.this, AddItem.class);
-                startActivity(intent);
-            }
-        });
+    companion object {
+        //Model: Database of items
+        private var itemsDB: ItemsDB? = null
     }
 }

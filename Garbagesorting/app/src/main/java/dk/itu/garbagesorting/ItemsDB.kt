@@ -1,50 +1,48 @@
-package dk.itu.garbagesorting;
+package dk.itu.garbagesorting
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+class ItemsDB private constructor() {
+    private val itemsDB: MutableMap<String, String> = HashMap()
 
-public class ItemsDB {
-    private static ItemsDB sItemsDB;
-    private Map<String, String> itemsDB= new HashMap<>();
-
-    private ItemsDB() { fillItemsDB(); }
-
-    public static void initialize() {
-        if (sItemsDB == null) sItemsDB= new ItemsDB();
+    init {
+        fillItemsDB()
     }
 
-    public static ItemsDB get() {
-        if (sItemsDB == null) throw new IllegalStateException("ItemsDB must be initialized");
-        return sItemsDB;
+    fun addItem(what: String, where: String) {
+        itemsDB[what] = where
     }
 
-    public void addItem(String what, String where){
-        itemsDB.put(what, where);
+    fun fillItemsDB() {
+        itemsDB["coffee"] = "residual waste"
+        itemsDB["carrots"] = "residual waste"
+        itemsDB["milk carton"] = "cardboard"
+        itemsDB["bread"] = "residual waste"
+        itemsDB["butter"] = "residual waste"
+        itemsDB["meat package"] = "plastic"
+        itemsDB["bean can"] = "metal"
     }
 
-    public void fillItemsDB() {
-        itemsDB.put("coffee", "residual waste");
-        itemsDB.put("carrots", "residual waste");
-        itemsDB.put("milk carton", "cardboard");
-        itemsDB.put("bread", "residual waste");
-        itemsDB.put("butter", "residual waste");
-        itemsDB.put("meat package", "plastic");
-        itemsDB.put("bean can", "metal");
-    }
-
-    public String searchForItem(String item){
-        String itemPlace = "not found";
-
-        for (Map.Entry<String, String> existingItem : itemsDB.entrySet()) {
-            if (existingItem.getKey().equals(item)){
-                itemPlace = existingItem.getValue();
+    fun searchForItem(item: String): String {
+        var itemPlace = "not found"
+        for ((key, value) in itemsDB) {
+            if (key == item) {
+                itemPlace = value
             }
         }
-        return itemPlace;
+        return itemPlace
     }
 
-    public Map<String, String> getMap(){
-        return itemsDB;
+    val map: Map<String, String>
+        get() = itemsDB
+
+    companion object {
+        private var sItemsDB: ItemsDB? = null
+        fun initialize() {
+            if (sItemsDB == null) sItemsDB = ItemsDB()
+        }
+
+        fun get(): ItemsDB? {
+            checkNotNull(sItemsDB) { "ItemsDB must be initialized" }
+            return sItemsDB
+        }
     }
 }
