@@ -13,13 +13,13 @@ class AddItem : AppCompatActivity() {
         itemsDB = ItemsDB.get()
 
         //Text Fields
-        val newWhat = findViewById<TextView>(R.id.which_item)
-        val newWhere = findViewById<TextView>(R.id.where_to_place)
-        val addItem = findViewById<Button>(R.id.add_button)
+        var newWhat = findViewById<TextView>(R.id.which_item)
+        var newWhere = findViewById<TextView>(R.id.where_to_place)
+        var addItem = findViewById<Button>(R.id.add_button)
         // adding a new thing
         addItem.setOnClickListener {
-            val whatS = newWhat.text.toString().trim { it <= ' ' }
-            val whereS = newWhere.text.toString().trim { it <= ' ' }
+            var whatS = newWhat.text.toString().trim { it <= ' ' }
+            var whereS = newWhere.text.toString().trim { it <= ' ' }
             if (whatS.length > 0 && whereS.length > 0) {
                 itemsDB?.addItem(whatS, whereS)
                 newWhat.text = ""
