@@ -1,24 +1,34 @@
 package dk.itu.garbagesorting
 
-class ItemsDB private constructor() {
+import android.content.Context
+import java.io.BufferedReader
+import java.io.IOException
+import java.io.InputStreamReader
+
+class ItemsDB private constructor(context: Context) {
     private val itemsDB: MutableMap<String, String> = HashMap()
 
     init {
-        fillItemsDB()
+        fillItemsDB(context)
     }
 
     fun addItem(what: String, where: String) {
         itemsDB[what] = where
     }
 
-    fun fillItemsDB() {
-        itemsDB["coffee"] = "residual waste"
-        itemsDB["carrots"] = "residual waste"
-        itemsDB["milk carton"] = "cardboard"
-        itemsDB["bread"] = "residual waste"
-        itemsDB["butter"] = "residual waste"
-        itemsDB["meat package"] = "plastic"
-        itemsDB["bean can"] = "metal"
+    fun fillItemsDB(context: Context) {
+        try {
+            val reader = BufferedReader(
+                    InputStreamReader(context.assets.open("garbage.txt")))
+            var line = reader.readLine()
+            while (line != null) {
+                val listItem = line.split(", ".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
+                addItem(listItem[0], listItem[1])
+                line = reader.readLine()
+            }
+        } catch (e: IOException) {
+            println("Error")
+        }
     }
 
     fun searchForItem(item: String): String {
@@ -36,8 +46,8 @@ class ItemsDB private constructor() {
 
     companion object {
         private var sItemsDB: ItemsDB? = null
-        fun initialize() {
-            if (sItemsDB == null) sItemsDB = ItemsDB()
+        fun initialize(context: Context) {
+            if (sItemsDB == null) sItemsDB = ItemsDB(context)
         }
 
         fun get(): ItemsDB? {
